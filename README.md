@@ -8,7 +8,6 @@
 ## 特徴
 PratformIOにインストールされるArduino-ESP32(3.x)環境で利用できるI2Sライブラリは<driver/i2s.h>です。
 この制限の中、シンプルな記述でI2S-Cameraモードを動かしています。
-また、比較的高速です。
 - QQVGA:20.00fps
 - QVGA:6.66fps
 - VGA:1.66fps
