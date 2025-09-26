@@ -16,6 +16,8 @@ PratformIOにインストールされるArduino-ESP32(3.x)環境で利用でき�
 - PratformIOで適当なプロジェクトを作成し、<lib>フォルダとmain.cppをプロジェクトへコピーしてください。
 - OV7670Device.hpp, LcdST77xx.hpp のピンアサインに基づき、ESP32-DevKitC-V4とOV7670とLCDを配線してください。
 - ビルドし、転送すると、デモンストレーションを見ることができます。
+<a href="https://t.co/YNpWbu2TDo">pic.twitter.com/YNpWbu2TDo</a>『昼夜逆転』工作室 (@jsdiy)
+<a href="https://twitter.com/jsdiy/status/1971547894042984603?ref_src=twsrc%5Etfw">September 26, 2025</a>
 
 ## 動作環境
 - PratformIO + Arduino Framework
