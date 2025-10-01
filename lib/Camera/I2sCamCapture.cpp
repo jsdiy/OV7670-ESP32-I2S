@@ -82,10 +82,6 @@ void	I2sCamCapture::GpioMatrix(void)
 //フレーム（カメラの1画面）出力の区切りまで待つ
 void	I2sCamCapture::WaitForFrameEnd(void)
 {
-	/*
-	//VSYNC=Hiは画面出力の途中なので（VSYNC:正論理の場合）、その期間を待機する
-	while(gpio_get_level(CameraConfig::CamPin::VSYNC)) {}
-	*/
 	//VSYNC=Loは画面出力の途中なので（VSYNCは負論理）、その期間を待機する
 	while(!gpio_get_level(CameraConfig::CamPin::VSYNC)) {}
 }
@@ -298,22 +294,10 @@ void	I2sCamCapture::I2sDriverInstall(int16_t width, int16_t bytePerPixel)
 //キャプチャを停止する
 void	I2sCamCapture::CaptureStop(void)
 {
-	//while(gpio_get_level(CameraConfig::CamPin::HREF)) {}	//HREF=Hiはカメラが画素データを出力中
-	//↑停止した行によっては再開時に画像が乱れるのでボツ（.dma_buf_count, .dma_buf_lenに起因すると思われる）
 	WaitForFrameEnd();
 	i2s_stop(I2S_NUM_0);
 
-	/*	VSYNCに同期して停止するなら下記は必要ないことが分かった
-	//FIFO,DMAをリセットする
-	//・ビットは自動的にクリアされないので手動でクリアする。
-	I2S0.conf.rx_fifo_reset = 1;
-	while (I2S0.state.rx_fifo_reset_back) {}	//1: reset is not ready; 0: reset is ready.
-	I2S0.conf.rx_fifo_reset = 0;
-	I2S0.conf.rx_reset = 1;
-	//rx_resetにはリセット完了通知はない
-	I2S0.conf.rx_reset = 0;
-	*/
-
+	//以下の説明は開発中には必要な検討事項だったが、上記コードで問題は解決したので、今となっては参考情報。
 	/*	説明： DMAバッファをリセットする
 	■i2s_driver_install()直後、
 	transmission_start = (I2S_H_SYNC == 1) && (I2S_V_SYNC == 1) && (I2S_H_ENABLE == 1)
@@ -327,6 +311,25 @@ void	I2sCamCapture::CaptureStop(void)
 	FIFOとDMAバッファの書き込みポインタ（インデックス）を先頭に戻したうえで、
 	0行目の0番目の画素開始に同期して画素データを格納し始めればよい。
 	VSYNCを監視することで画面の開始（0行目の0番目の画素開始）を検出することができる。
+
+	■FIFO,DMAをリセットするには、
+	下記のコードでFIFO,DMAをリセットすることができる。
+	ビットは自動的にクリアされないので手動でクリアする必要がある。
+		I2S0.conf.rx_fifo_reset = 1;
+		while (I2S0.state.rx_fifo_reset_back) {}	//1: reset is not ready; 0: reset is ready.
+		I2S0.conf.rx_fifo_reset = 0;
+		I2S0.conf.rx_reset = 1;
+		//rx_resetにはリセット完了通知はない
+		I2S0.conf.rx_reset = 0;
+	【ただし！】
+	VSYNCに同期して停止すれば、FIFO,DMAをリセットする処理は必要ない。
+
+	■参考
+	開発中に下記のようにしていたことがあったが、この方法は停止タイミングによっては再開時に画像が乱れるのでボツとなった。
+	→.dma_buf_count, .dma_buf_lenに起因すると思われる。
+		while(gpio_get_level(CameraConfig::CamPin::HREF)) {}	//HREF=Hiはカメラが画素データを出力中
+	その後、VSYNCに同期して停止するように変更したところ、画像の乱れはなくなり、
+	さらにFIFO,DMAのリセット処理も不要となり、スッキリした。
 	*/
 }
 
