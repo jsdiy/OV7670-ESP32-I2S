@@ -6,21 +6,21 @@
 技術的な説明はソースコードおよび、ソースコード中のコメントを見てください。
 
 ## 特徴
-PratformIO＋Arduino-ESP32環境ではI2Sライブラリ<driver/i2s.h>が標準でインストールされています。
+PlatformIO＋Arduino-ESP32環境ではI2Sライブラリ<driver/i2s.h>が標準でインストールされています。
 これを利用してシンプルな記述でI2Sカメラモードを動かしています。
 - QQVGA: 20.00fps
 - QVGA: 6.66fps
 - VGA: 1.66fps
 
 ## 使い方
-- PratformIOで適当なプロジェクトを作成し、<lib>フォルダとmain.cppをプロジェクトへコピーしてください。
+- PlatformIOで適当なプロジェクトを作成し、<lib>フォルダとmain.cppをプロジェクトへコピーしてください。
 - OV7670Device.hpp, LcdST77xx.hpp のピンアサインに基づき、ESP32-DevKitC-V4とOV7670とLCDを配線してください。
 - ビルドし、転送すると、デモンストレーションを見ることができます。
   ### 動画
   『昼夜逆転』工作室 (@jsdiy) <a href="https://twitter.com/jsdiy/status/1971547894042984603">September 26, 2025</a>
 
 ## 動作環境
-- PratformIO + Arduino Framework
+- PlatformIO + Arduino Framework
 - ESP32-DevKitC-V4
 - OV7670（FIFOなし）
 - SPI-LCD(ST7789/QVGA)
