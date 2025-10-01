@@ -19,7 +19,7 @@ PlatformIO＋Arduino-ESP32環境ではI2Sライブラリ<driver/i2s.h>が標準�
   ### 動画
   『昼夜逆転』工作室 (@jsdiy) <a href="https://twitter.com/jsdiy/status/1971547894042984603">September 26, 2025</a>
 
-## 動作環境
+## 開発環境/動作確認環境
 - PlatformIO + Arduino Framework
 - ESP32-DevKitC-V4
 - OV7670（FIFOなし）
