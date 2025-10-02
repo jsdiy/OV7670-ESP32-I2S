@@ -4,7 +4,7 @@
 /*
 Camera
 	+-- OV7670Device			:カメラの制御
-	|		+-- OV7670Register	:カメラのレジスタ設定内容
+	|		+-- OV7670Register	:カメラのレジスタ設定
 	+-- I2sCamCapture			:画素データのキャプチャ、出力関数の呼び出し
 */
 
