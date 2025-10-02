@@ -28,9 +28,8 @@ ESP32標準のI2Sライブラリ＜driver/i2s.h＞を利用し、シンプルな
 
 	### 開発経緯
 	PlatformIO/Arduino-ESP32環境/ESP32(PSRAMなし)で動作するOV7670(FIFOなし)用ドライバーはほぼ見付かりません。
-	Espressif製カメラドライバーの解析を試みた際、改造や移植（ESP-IDFからArduinoFrameworkへ）は容易ではないと思いました。
-	ESP32のI2Sカメラモードを調査しているうちに、既存ドライバーの内容はI2Sライブラリに含まれるi2s_driver_install()と似ていることが分かりました。
-	そのようなわけで、上記条件で動作するシンプルなカメラドライバーを自作しました。  
-	既存ドライバーが自前で記述しているI2S-DMA動作の部分などはi2s_driver_install()に置き換えることができます。
-	その引数であるi2s_config_tでは特に.dma_buf_countと.dma_buf_lenを適切に設定することが重要です。
-
+	Espressif製カメラドライバーの解析を試みて、改造や移植（ESP-IDFからArduinoFrameworkへ）は容易ではないと判断し、
+	自作することにしました。  
+	既存ドライバーが自前で記述しているI2S-DMA動作などの部分は
+	I2Sライブラリに含まれるi2s_driver_install()の処理内容と似ており、 工夫すれば置き換えられます。
+	引数i2s_config_tの.dma_buf_countと.dma_buf_lenを適切に設定することが重要です。
