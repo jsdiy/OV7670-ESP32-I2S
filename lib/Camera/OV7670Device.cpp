@@ -1,6 +1,6 @@
 //カメラ操作 - OV7670
 //『昼夜逆転』工作室	@jsdiy	https://github.com/jsdiy
-//	2024/04 - 2025/07
+//	2024/04 - 2025/10
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -16,7 +16,7 @@ OV7670Device::OV7670Device(void)
 //初期化
 void	OV7670Device::Initialize(void)
 {
-	using	namespace	CameraConfig;	//CamPinのため
+	using	namespace	CameraConfig;
 
 	//SCCB通信開始
 	//・カメラはクロックを供給されていないと通信できないので、通信するまでにXCLKを出力すること。
@@ -33,9 +33,21 @@ void	OV7670Device::Initialize(void)
 	pinMode(CamPin::D6, INPUT_PULLUP);	pinMode(CamPin::D7, INPUT_PULLUP);
 }
 
+//解像度別のXCLK分周値を取得する
+uint8_t	OV7670Device::GetXclkDivider(ECamResolution resolution)
+{
+	switch (resolution)
+	{
+	case	ECamResolution::VGA:	return CameraConfig::SpeedLevel::VGA;
+	case	ECamResolution::QVGA:	return CameraConfig::SpeedLevel::QVGA;
+	case	ECamResolution::QQVGA:	return CameraConfig::SpeedLevel::QQVGA;
+	default:	break;
+	}
+	return 0;
+}
+
 //カメラの動作モードを設定する
-//引数	xclkPreScale:	VGA:12～64, QVGA:3～64, QQVGA:1～64
-void	OV7670Device::DeviceConfigure(ECamResolution resolution, ECamColorMode colorMode, uint8_t xclkPreScale)
+void	OV7670Device::DeviceConfigure(ECamResolution resolution, ECamColorMode colorMode)
 {
 	//レジスタをリセットする
 	SoftwareReset();
@@ -50,13 +62,14 @@ void	OV7670Device::DeviceConfigure(ECamResolution resolution, ECamColorMode colo
 	SetColorMode(colorMode);
 
 	//内部クロックをセットする
-	SetClockDiv(xclkPreScale);
+	auto xclkdiv = GetXclkDivider(resolution);
+	SetSysClock(xclkdiv);
 }
 
 //クロックを供給する
 void	OV7670Device::SupplyXclk(void)
 {
-	using	namespace	CameraConfig;	//CamPinのため
+	using	namespace	CameraConfig;
 
 	constexpr	uint32_t	pwmFrequency = 16UL * 1000000;	//XCLKへの入力(10～48MHz)
 	constexpr	uint8_t	pwmResolutionBits = 2;	//pwmFrequencyによって決める（2: 20MHzまで生成可）
@@ -199,7 +212,6 @@ void	OV7670Device::SetResolution(ECamResolution camRes)
 		WriteRegisterList(OV7670_vga);
 		SetWindow(158, 10);
 		width = 640;	height = 480;
-		//SetClockDiv(64 - 1);	※DeviceConfigure()で設定するよう変更した
 		break;
 
 	case	ECamResolution::QVGA:
@@ -208,22 +220,6 @@ void	OV7670Device::SetResolution(ECamResolution camRes)
 		WriteRegisterList(OV7670_qvga);
 		SetWindow(176, 12);
 		width = 320;	height = 240;
-
-		/*	ATmega328P@16MHz
-		//内部クロックをセットする:QVGA	
-		//ポーリング方式で1行ごとに、
-		//・描画のみ			(19～64)-1
-		//・データ保存のみ		(23～64)-1
-		//・描画＋データ保存	(41～64)-1
-		//SetClockDiv(23 - 1);
-		*/
-		/*
-		//ESP32@XCLK=10MHz,割り込み＋タスク方式
-		SetClockDiv(36 - 1);	//(35～64)-1
-		*/
-		//ESP32 I2S＋タスク＋SPI_DMA方式
-		//XCLK=16MHz/3分周で動作する
-		//SetClockDiv(3);	//3～64		※DeviceConfigure()で設定するよう変更した
 		break;
 
 	default:
@@ -233,22 +229,6 @@ void	OV7670Device::SetResolution(ECamResolution camRes)
 		WriteRegisterList(OV7670_qqvga);
 		SetWindow(184, 10);
 		width = 160;	height = 120;
-
-		//内部クロックをセットする:QQVGA
-		/*	ATmega328P@16MHz
-		//ポーリング方式で1行ごとに、
-		//・描画のみ			(4～64)-1
-		//・データ保存のみ		(5～64)-1
-		//・描画＋データ保存	(8～64)-1
-		SetClockDiv(5 - 1);
-		*/
-		/*
-		//ESP32@XCLK=10MHz,割り込み＋タスク＋SPI_DMA方式
-		SetClockDiv(15 - 1);	//(15～64)-1	※-Osと-O2とで変わらず
-		*/
-		//ESP32 I2S＋タスク＋SPI_DMA方式
-		//XCLK=16MHz/分周なしで動作する
-		//SetClockDiv(1);	//1～64		※DeviceConfigure()で設定するよう変更した
 		break;
 	}
 }
@@ -268,7 +248,7 @@ void	OV7670Device::RefreshCLKRC(void)
 	hStop = hStart + 640 - 784;
 	vStop = vStart + 480;
 
-「784」の出どころは、
+「784」の出所は、
 ・データシート(v1.4)
 	Figure 6. VGA Frame Timing
 		HREF: t_Line = 784t_P
@@ -335,9 +315,10 @@ void	OV7670Device::SetColorMode(ECamColorMode colMode)
 
 //内部クロックを設定する
 //引数:	XCLKの分周値	1分周(分周なし), 2分周, 3分周, …, 64分周
-void	OV7670Device::SetClockDiv(uint8_t xclkPreScale)
+void	OV7670Device::SetSysClock(uint8_t xclkPreScale)
 {
 	//分周値(1～64)をレジスタ値(0～63)に変換する
+	if (64 < xclkPreScale) { xclkPreScale = 64; }
 	if (xclkPreScale == 0) { xclkPreScale = 1; }
 	xclkPreScale = xclkPreScale - 1;
 

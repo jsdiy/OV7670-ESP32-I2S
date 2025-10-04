@@ -1,6 +1,6 @@
 //カメラから画像データを受信・処理する
 //『昼夜逆転』工作室	@jsdiy	https://github.com/jsdiy
-//	2025/08
+//	2025/08 - 2025/10
 
 #include <Arduino.h>
 #include <driver/i2s.h>
@@ -29,15 +29,17 @@ void	I2sCamCapture::Initialize(void)
 	lineIndex = 0;
 	FuncCB = nullptr;
 
-	GpioMatrix();
+	SetGpioMatrix();
 }
 
 //GPIOマトリクスでカメラのピンをI2Sにマッピングする
-void	I2sCamCapture::GpioMatrix(void)
+void	I2sCamCapture::SetGpioMatrix(void)
 {
 	using	namespace	CameraConfig;
 
 	//GPIOマトリクスでピンをI2Sにマッピング
+	//・VSYNCはDMA転送開始条件を満たすように反転する/しないを考慮すること。
+	//	→OV7670のVSYNCは負論理なので反転して接続することとなる。
 	gpio_matrix_in(CamPin::D0, I2S0I_DATA_IN0_IDX, false);
 	gpio_matrix_in(CamPin::D1, I2S0I_DATA_IN1_IDX, false);
 	gpio_matrix_in(CamPin::D2, I2S0I_DATA_IN2_IDX, false);
@@ -46,8 +48,8 @@ void	I2sCamCapture::GpioMatrix(void)
 	gpio_matrix_in(CamPin::D5, I2S0I_DATA_IN5_IDX, false);
 	gpio_matrix_in(CamPin::D6, I2S0I_DATA_IN6_IDX, false);
 	gpio_matrix_in(CamPin::D7, I2S0I_DATA_IN7_IDX, false);
-	gpio_matrix_in(CamPin::VSYNC, I2S0I_V_SYNC_IDX, true);	//VSYNC（負論理：カメラ側のデフォルト動作）を反転して接続
-	//gpio_matrix_in(CamPin::VSYNC, I2S0I_V_SYNC_IDX, false);	//VSYNC（正論理：カメラ側で反転設定した場合）を反転せずに接続
+	gpio_matrix_in(CamPin::VSYNC, I2S0I_V_SYNC_IDX, true);	//VSYNCを反転して接続（カメラ側が負論理の場合）
+	//gpio_matrix_in(CamPin::VSYNC, I2S0I_V_SYNC_IDX, false);	//VSYNCを反転せずに接続（カメラ側が正論理の場合）
 	gpio_matrix_in(CamPin::PCLK, I2S0I_WS_IN_IDX, false);		//PCLKをWSに接続
 	gpio_matrix_in(CamPin::HREF, I2S0I_H_SYNC_IDX, false);		//HREFをH_SYNCに接続
 	gpio_matrix_in(CamPin::HREF, I2S0I_H_ENABLE_IDX, false);	//HREFをH_ENABLEにも接続

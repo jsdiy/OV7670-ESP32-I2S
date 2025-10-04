@@ -1,6 +1,6 @@
 //カメラから画像データを受信・処理する
 //『昼夜逆転』工作室	@jsdiy	https://github.com/jsdiy
-//	2025/08
+//	2025/08 - 2025/10
 
 #pragma	once
 
@@ -16,7 +16,7 @@ class	I2sCamCapture
 private:
 	TaskHandle_t	hLineProcTask;
 	bool	isI2sDriverInstalled;
-	void	GpioMatrix(void);
+	void	SetGpioMatrix(void);
 	void	WaitForFrameEnd(void);
 	void	I2sDriverInstall(int16_t width, int16_t bytePerPixel);
 	void	CreateI2sReadBuffer(size_t pixelDataLength);

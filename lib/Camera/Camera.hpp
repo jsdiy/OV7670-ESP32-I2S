@@ -1,6 +1,6 @@
 //カメラ操作 - OV7670
 //『昼夜逆転』工作室	@jsdiy	https://github.com/jsdiy
-//	2025/08 - 2025/09
+//	2025/08 - 2025/10
 /*
 Camera
 	+-- OV7670Device			:カメラの制御
@@ -18,18 +18,7 @@ Camera
 class	Camera	: public OV7670Device, public I2sCamCapture
 {
 private:
-	//フレーム速度（XCLKのn分周）
-	uint8_t	GetSpeedLevel(ECamResolution resolution)
-	{
-		switch (resolution)
-		{
-		case	ECamResolution::VGA:	return CameraConfig::SpeedLevel::VGA;
-		case	ECamResolution::QVGA:	return CameraConfig::SpeedLevel::QVGA;
-		case	ECamResolution::QQVGA:	return CameraConfig::SpeedLevel::QQVGA;
-		default:	break;
-		}
-		return 0;
-	}
+	//なし
 
 public:
 	Camera(void) {}
@@ -42,8 +31,7 @@ public:
 
 	void	Configure(ECamResolution resolution, ECamColorMode colorMode, FnCamPixelData func)
 	{
-		uint8_t speedLevel = GetSpeedLevel(resolution);
-		DeviceConfigure(resolution, colorMode, speedLevel);
+		DeviceConfigure(resolution, colorMode);
 		CaptureConfigure(Width(), Height(), BytePerPixel(), func);
 	}
 };

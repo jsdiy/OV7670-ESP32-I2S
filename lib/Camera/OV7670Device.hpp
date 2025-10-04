@@ -1,10 +1,11 @@
 //カメラ操作 - OV7670
 //『昼夜逆転』工作室	@jsdiy	https://github.com/jsdiy
-//	2024/04 - 2025/07
+//	2024/04 - 2025/10
 
 #pragma	once
 
 #include <Arduino.h>
+#include <map>
 #include "OV7670Register.hpp"
 using	namespace 	OV7670RegVal;
 
@@ -54,7 +55,7 @@ namespace	CameraConfig
 			QQVGA	= 1;	//1～64
 
 		/*	【XCLKの分周値】
-		分周値は1～64で設定する。アプリの内容（描画負荷）によって調整する。
+		分周値は1～64で設定する。アプリの内容（描画処理）によって調整する。
 		値が小さいほど速い。下限値は解像度により異なる。
 		→キャプチャと描画の両方をコア1で動かす場合、経験則として VGA:12～64, QVGA:3～64, QQVGA:1～64.
 		*/
@@ -86,13 +87,14 @@ private:
 	static	const	uint8_t	SlaveAddress = 0x21;	//7bitアドレス	※(W:0x42,R:0x43)>>1
 	int16_t	width, height;
 	int16_t	bytePerPixel;
+	uint8_t	GetXclkDivider(ECamResolution resolution);
 	void	SupplyXclk(void);
 	uint8_t	ReadRegister(uint8_t addr);
 	void	WriteRegister(uint8_t addr, uint8_t data);
 	void	WriteRegisterList(const regval_list* list);
 	void	SoftwareReset(void);
 	void	SetResolution(ECamResolution camRes);
-	void	SetClockDiv(uint8_t xclkPreScale);	//引数: 1～64
+	void	SetSysClock(uint8_t xclkPrescale);	//引数: 1～64
 	void	RefreshCLKRC(void);
 	void	SetWindow(uint16_t hStart, uint16_t vStart);
 	void	SetColorMode(ECamColorMode colMode);
@@ -103,8 +105,7 @@ public:
 	int16_t	Height(void) { return height; }
 	int16_t	BytePerPixel(void) { return bytePerPixel; }
 	void	Initialize(void);
-	//void	DeviceConfigure(ECamResolution resolution, ECamColorMode colorMode);
-	void	DeviceConfigure(ECamResolution resolution, ECamColorMode colorMode, uint8_t xclkPreScale);
+	void	DeviceConfigure(ECamResolution resolution, ECamColorMode colorMode);
 	//
 	uint16_t	GetProductID(void);
 	void	ColorBar(bool isOn);
