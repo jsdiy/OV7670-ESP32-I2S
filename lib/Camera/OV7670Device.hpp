@@ -31,7 +31,7 @@ namespace	CameraConfig
 			D1		= GPIO_NUM_25,
 			D0		= GPIO_NUM_26;
 
-			/*	【OV7670モジュールのピン配列】
+		/*	【OV7670モジュールのピン配列】
 		トップビュー
 		←外側	レンズ側→
 		3V3		GND
@@ -118,3 +118,4 @@ public:
 	uint8_t	GetContrast(void);
 	void	SetContrast(uint8_t val);
 };
+
