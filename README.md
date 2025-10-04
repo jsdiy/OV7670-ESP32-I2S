@@ -33,8 +33,8 @@ ESP32標準のI2Sライブラリを利用し、シンプルな記述でI2Sカメ
 
 ## 動確認作環境
 - PlatformIO + ArduinoFramework
-- ESP32-DevKitC-V4 (PSRAMなしのESP32)
-- OV7670 (FIFOなし)
+- ESP32-DevKitC-V4 (No PSRAM)
+- OV7670 (No FIFO)
 - SPI-LCD (ST7789/QVGA, ST7735/QQVGA)
 
 ### 開発経緯
