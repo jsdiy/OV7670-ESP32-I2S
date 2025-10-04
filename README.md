@@ -31,7 +31,7 @@ ESP32標準のI2Sライブラリを利用し、シンプルな記述でI2Sカメ
 - アプリケーション内
 	- キャプチャした画素データを適宜処理する関数。関数名と引数名は任意。
 
-## 動確認作環境
+## 動作確認作環境
 - PlatformIO + ArduinoFramework
 - ESP32-DevKitC-V4 (No PSRAM)
 - OV7670 (No FIFO)
