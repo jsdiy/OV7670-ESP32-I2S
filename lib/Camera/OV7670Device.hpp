@@ -19,7 +19,7 @@ namespace	CameraConfig
 			SCL		= GPIO_NUM_22,	//GPIO22:WireのSCL
 			SDA		= GPIO_NUM_21,	//GPIO21:WireのSDA
 			VSYNC	= GPIO_NUM_27,
-			HREF	= GPIO_NUM_2,
+			HREF	= GPIO_NUM_13,
 			PCLK	= GPIO_NUM_14,
 			XCLK	= GPIO_NUM_4,
 			D7		= GPIO_NUM_36,	//GPIO36(VP):入力専用ピン
@@ -118,4 +118,3 @@ public:
 	uint8_t	GetContrast(void);
 	void	SetContrast(uint8_t val);
 };
-
