@@ -14,9 +14,9 @@ namespace	ST77xxConfig
 {
 	//ピンアサイン
 	//参考	ESP32のVSPI: SS = GPIO_NUM_5, MOSI = GPIO_NUM_23, (MISO = GPIO_NUM_19), SCK = GPIO_NUM_18
-	constexpr	auto
+	constexpr	gpio_num_t
 		PinSS		= GPIO_NUM_5,	//ST7735:CS, ST7789:CS
-		PinDC		= GPIO_NUM_13,	//ST7735:A0, ST7789:DC
+		PinDC		= GPIO_NUM_16,	//ST7735:A0, ST7789:DC
 		PinRESET	= GPIO_NUM_NC;	//ST7735:RESET, ST7789:RST
 
 	//コントローラー
