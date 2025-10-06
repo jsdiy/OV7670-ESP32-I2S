@@ -3,7 +3,9 @@
 ## 概要
 OV7670 driver for ESP32. カメラOV7670（FIFOなし）のESP32用ドライバーです。
 既存のESP32用ドライバーと比べて構造がシンプルなので設定が簡単、安定して動作します。
-技術的な説明はソースコード中のコメントを見てください。
+技術的な説明はソースコード中のコメントを見てください。  
+また、OV7670についてはLinux版のレジスタ設定の最適化を試みています。  
+参考:Linux版レジスタ設定 https://github.com/torvalds/linux/blob/master/drivers/media/i2c/ov7670.c
 
 ### 詳細記事
 [https://jsdiy.github.io](https://jsdiy.github.io)　→　カメラモジュールOV7670ドライバー（ESP32用）
